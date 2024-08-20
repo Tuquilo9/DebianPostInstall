@@ -143,6 +143,19 @@ fi
 echo "Installing some extensions ..."
 sudo apt install gnome-shell-extension-dashtodock gnome-shell-extension-gsconnect gnome-shell-extension-appindicator
 
+#Adw GTK3
+sudo apt install wget
+wget https://github.com/lassekongo83/adw-gtk3/releases/download/v5.3/adw-gtk3v5.3.tar.xz
+if ls | grep -q adw-gtk3v5.3.tar.xz > /dev/null; then
+    xz -d adw-gtk3v5.3.tar.xz
+    if ls | grep -q adw-gtk3v5.3.tar > /dev/null; then
+        tar -xf adw-gtk3v5.3.tar
+        sudo mv adw-gtk3/ /usr/share/themes
+        sudo mv adw-gtk3-dark/ /usr/share/themes
+        rm adw-gtk3v5.3.tar.xz adw-gtk3v5.3.tar
+    fi
+fi
+
 #Install some flatpak apps
 
 flatpak install flathub com.vscodium.codium
@@ -162,18 +175,6 @@ dconf write /org/gnome/desktop/wm/preferences/button-layout "'appmenu:minimize,m
 dconf write /org/gnome/desktop/wm/preferences/focus-mode "'sloppy'"
 dconf write /org/gnome/desktop/privacy/remove-old-temp-files true
 dconf write /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
-
-sudo apt install wget
-wget https://github.com/lassekongo83/adw-gtk3/releases/download/v5.3/adw-gtk3v5.3.tar.xz
-if ls | grep -q adw-gtk3v5.3.tar.xz > /dev/null; then
-    xz -d adw-gtk3v5.3.tar.xz
-    if ls | grep -q adw-gtk3v5.3.tar > /dev/null; then
-        tar -xf adw-gtk3v5.3.tar
-        sudo mv adw-gtk3/ /usr/share/themes
-        sudo mv adw-gtk3-dark/ /usr/share/themes
-        rm adw-gtk3v5.3.tar.xz adw-gtk3v5.3.tar
-    fi
-fi
 
 if ls /usr/share/themes | grep -q adw > /dev/null; then
     dconf write /org/gnome/desktop/interface/gtk-theme "'adw-gtk3-dark'"    
