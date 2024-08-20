@@ -9,13 +9,17 @@ echo "This script only supports GNOME!"
 #Updates
 
 echo "Installing updates (during all the process you'll have to press Y to be sure that only wanted operations occur!)"
+set -e
 sudo apt update && sudo apt upgrade
+set +e
 
 #Gnome install
 
 echo "
 Installing GNOME ..."
-sudo apt install gnome-core desktop-base libproxy1-plugin-networkmanager network-manager-gnome file-roller gnome-color-manager shotwell gnome-photos rygel-playbin rygel-tracker simple-scan avahi-daemon gnome-sound-recorder gnome-tweaks libgsf-bin rhythmbox seahorse xdg-user-dirs-gtk cups-pk-helper evolution-plugins gstreamer1.0-libav gstreamer1.0-plugins-ugly rhythmbox-plugins rhythmbox-plugin-cdrecorder gnome-software-plugin-flatpak
+set -e
+sudo apt install gnome-core desktop-base libproxy1-plugin-networkmanager network-manager-gnome file-roller gnome-color-manager shotwell gnome-photos rygel-playbin rygel-tracker simple-scan avahi-daemon gnome-sound-recorder gnome-tweaks libgsf-bin rhythmbox seahorse xdg-user-dirs-gtk cups-pk-helper evolution-plugins gstreamer1.0-libav gstreamer1.0-plugins-ugly rhythmbox-plugins rhythmbox-plugin-cdrecorder
+set +e
 sudo systemctl disable --now ModemManager
 sudo apt autoremove evolution-data-server yelp firefox* libreoffice*
 
@@ -23,14 +27,16 @@ sudo apt autoremove evolution-data-server yelp firefox* libreoffice*
 
 echo "
 Installing flatpak and add flathub remote ..."
-sudo apt install flatpak
-flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+set -e
+sudo apt install flatpak gnome-software-plugin-flatpak
+set +e
+sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
 #Swapfile creation
 
 read -p "Do you want to create a swapfile (recommended) ? (y/N)" SWAPFILE
 if [[ ${SWAPFILE,,} = y || ${SWAPFILE,,} = yes ]]; then
-    if swapon --show | grep -q '/swapfile'; then
+    if sudo swapon --show | grep -q '/swapfile'; then
         echo "A swapfile already exists"
     else
         read -p "What should be the size of the swapfile ? (ex: 2G)" SWAPFILESIZE
@@ -45,7 +51,9 @@ fi
 
 sudo sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=1/' /etc/default/grub
 sudo sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="[^"]*/& splash/' /etc/default/grub
-sudo apt-get install plymouth plymouth-themes
+set +e
+sudo apt install plymouth plymouth-themes
+set -e
 sudo /sbin/plymouth-set-default-theme -R spinner
 sudo grub-mkconfig -o /boot/grub/grub.cfg
 
@@ -97,7 +105,9 @@ fi
 
 read -p "Do you want to install zram ? (y/N)" ZRAMINSTALL
 if [[ ${ZRAMINSTALL,,} = y || ${ZRAMINSTALL,,} = yes ]]; then
+    set -e
     sudo apt install zram-tools
+    set +e
     sudo nano /etc/default/zramswap
     sudo systemctl restart zramswap
 fi
@@ -120,7 +130,7 @@ fi
 #Install some gnome extensions
 
 echo "Installing some extensions ..."
-sudo apt install gnome-shell-extension-dashtodock gnome-shell-extension-gsconnect
+sudo apt install gnome-shell-extension-dashtodock gnome-shell-extension-gsconnect gnome-shell-extension-appindicator
 
 #Install some flatpak apps
 
@@ -129,25 +139,20 @@ flatpak install flathub io.missioncenter.MissionCenter
 flatpak install flathub io.gitlab.librewolf-community
 flatpak install flathub org.libreoffice.LibreOffice
 
-
-
 echo "The first step of the script is finished !"
 sleep 1
+echo "Please reboot and log into GNOME to do the final tweaks!"
 
-echo "Doing final tweaks ...
- 
-"
+#Put the second script in ~/main_after.sh
 
-echo "Making some tweaks to GNOME ..."
-echo "This will only work if you're logged in as your user"
-
+cat << 'END' > ~/main_after.sh
 dconf write /org/gnome/mutter/focus-change-on-pointer-rest true
 dconf write /org/gnome/desktop/wm/preferences/button-layout "'appmenu:minimize,maximize,close'"
 dconf write /org/gnome/desktop/wm/preferences/focus-mode "'sloppy'"
 dconf write /org/gnome/desktop/privacy/remove-old-temp-files true
 dconf write /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
 
-sudo apt-get install wget --no-install-recommends
+sudo apt install wget
 wget https://github.com/lassekongo83/adw-gtk3/releases/download/v5.3/adw-gtk3v5.3.tar.xz
 if ls | grep -q adw-gtk3v5.3.tar.xz > /dev/null; then
     xz -d adw-gtk3v5.3.tar.xz
@@ -168,7 +173,33 @@ dconf write /org/gnome/shell/extensions/dash-to-dock/isolate-workspaces true
 dconf write /org/gnome/shell/extensions/dash-to-dock/show-trash false
 dconf write /org/gnome/shell/extensions/dash-to-dock/custom-theme-shrink true
 dconf write /org/gnome/shell/app-switcher/current-workspace-only true
-dconf write /org/gnome/shell/enabled-extensions "['gsconnect@andyholmes.github.io', 'dash-to-dock@micxgx.gmail.com']"
+dconf write /org/gnome/shell/enabled-extensions "['gsconnect@andyholmes.github.io', 'dash-to-dock@micxgx.gmail.com', 'ubuntu-appindicators@ubuntu.com']"
 dconf write /org/gnome/shell/extensions/dash-to-dock/dash-max-icon-size 40
 
-echo "FINISHED! You can reboot your system now!"
+#Remove created files
+rm ~/main.sh ~/main_after.sh ~/.config/autostart/main_after.desktop
+
+#Remove evolution, sometimes it reinstalls itself
+sudo apt autoremove evolution-data-server
+
+echo "FINISHED, enjoy your system!"
+echo "It's recommended to reboot one last time."
+sleep 3
+END
+
+#Execute it at boot
+
+mkdir -p ~/.config/autostart
+
+cat << 'EOF' > ~/.config/autostart/main_after.desktop
+[Desktop Entry]
+Type=Application
+Exec=bash -c '/home/$USER/main_after.sh'
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name=Main After Script
+Comment=PostInstallScript
+EOF
+
+chmod +x /home/$USER/main_after.sh
