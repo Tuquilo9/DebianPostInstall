@@ -63,6 +63,17 @@ echo "Setting a limit for systemd's logs (50M)..."
 sudo sed -i 's/#SystemMaxUse=/SystemMaxUse=50M/' /etc/systemd/journald.conf
 sudo systemctl restart systemd-journald
 
+#Fix /etc/network/interfaces
+
+sudo mv /etc/network/interfaces /etc/network/interfaces.bak
+sudo bash -c 'cat > /etc/network/interfaces <<EOF
+source /etc/network/interfaces.d/*
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+EOF'
+
 
 #Reduce /root reserved space
 
