@@ -80,7 +80,7 @@ fi
 
 #Usefull packages
 
-read -p "Do you want to install Fish, Neofetch, Htop, Gnome-extension-manager ? (y/N)" PACKAGEUSE
+read -p "Do you want to install Fish, Htop and Gnome-extension-manager ? (y/N)" PACKAGEUSE
 if [[ ${PACKAGEUSE,,} = y || ${PACKAGEUSE,,} = yes ]]; then
     sudo apt install fish gnome-shell-extension-manager htop
 fi
