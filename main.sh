@@ -9,15 +9,14 @@ echo "This script only supports GNOME!"
 #Updates
 
 echo "Installing updates (during all the process you'll have to press Y to be sure that only wanted operations occur!)"
-sudo apt update
-sudo apt upgrade
+sudo apt update && sudo apt upgrade
 
 #Gnome install
 
 echo "
 Installing GNOME ..."
 sudo apt install gnome-core desktop-base libproxy1-plugin-networkmanager network-manager-gnome file-roller gnome-color-manager shotwell gnome-photos rygel-playbin rygel-tracker simple-scan avahi-daemon gnome-sound-recorder gnome-tweaks libgsf-bin rhythmbox seahorse xdg-user-dirs-gtk cups-pk-helper evolution-plugins gstreamer1.0-libav gstreamer1.0-plugins-ugly rhythmbox-plugins rhythmbox-plugin-cdrecorder gnome-software-plugin-flatpak
-sudo systemctl disable ModemManager
+sudo systemctl disable --now ModemManager
 sudo apt autoremove evolution-data-server yelp firefox* libreoffice*
 
 #Flatpak install
@@ -143,7 +142,7 @@ echo "Making some tweaks to GNOME ..."
 echo "This will only work if you're logged in as your user"
 
 dconf write /org/gnome/mutter/focus-change-on-pointer-rest true
-dconf write /org/gnome/desktop/wm/preferences/button-layout appmenu:minimize,maximize,close
+dconf write /org/gnome/desktop/wm/preferences/button-layout "'appmenu:minimize,maximize,close'"
 dconf write /org/gnome/desktop/wm/preferences/focus-mode "'sloppy'"
 dconf write /org/gnome/desktop/privacy/remove-old-temp-files true
 dconf write /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
