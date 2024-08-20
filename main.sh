@@ -9,22 +9,22 @@ echo "This script only supports GNOME!"
 #Updates
 
 echo "Installing updates (during all the process you'll have to press Y to be sure that only wanted operations occur!)"
-sudo apt-get update
-sudo apt-get upgrade
+sudo apt update
+sudo apt upgrade
 
 #Gnome install
 
 echo "
 Installing GNOME ..."
-sudo apt-get install gnome-core desktop-base libproxy1-plugin-networkmanager network-manager-gnome file-roller gnome-color-manager shotwell gnome-photos rygel-playbin rygel-tracker simple-scan avahi-daemon gnome-sound-recorder gnome-tweaks libgsf-bin rhythmbox seahorse xdg-user-dirs-gtk cups-pk-helper evolution-plugins gstreamer1.0-libav gstreamer1.0-plugins-ugly rhythmbox-plugins rhythmbox-plugin-cdrecorder gnome-software-plugin-flatpak
+sudo apt install gnome-core desktop-base libproxy1-plugin-networkmanager network-manager-gnome file-roller gnome-color-manager shotwell gnome-photos rygel-playbin rygel-tracker simple-scan avahi-daemon gnome-sound-recorder gnome-tweaks libgsf-bin rhythmbox seahorse xdg-user-dirs-gtk cups-pk-helper evolution-plugins gstreamer1.0-libav gstreamer1.0-plugins-ugly rhythmbox-plugins rhythmbox-plugin-cdrecorder gnome-software-plugin-flatpak
 sudo systemctl disable ModemManager
-sudo apt-get autoremove evolution-data-server yelp firefox* libreoffice*
+sudo apt autoremove evolution-data-server yelp firefox* libreoffice*
 
 #Flatpak install
 
 echo "
 Installing flatpak and add flathub remote ..."
-sudo apt-get install flatpak
+sudo apt install flatpak
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
 #Swapfile creation
@@ -38,7 +38,6 @@ if [[ ${SWAPFILE,,} = y || ${SWAPFILE,,} = yes ]]; then
         sudo fallocate -l $SWAPFILESIZE /swapfile
         sudo chmod 600 /swapfile
         sudo mkswap /swapfile
-        sudo swapon /swapfile
         echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
     fi
 fi
@@ -61,13 +60,13 @@ sudo systemctl restart systemd-journald
 #Reduce /root reserved space
 
 read -p "What is the root disk's name (ex: /dev/sda2)?" ROOTDISKNAME
-tune2fs -r 1 $ROOTDISKNAME
+sudo tune2fs -r 1 $ROOTDISKNAME
 
 #Bluetooth
 
 read -p "Do you want to install bluetooth ? (y/N)" BLUETOOTH
 if [[ ${BLUETOOTH,,} = y || ${BLUETOOTH,,} = yes ]]; then
-    sudo apt-get install bluez
+    sudo apt install bluez
     sudo systemctl enable --now bluetooth
 else
     sudo systemctl disable --now bluetooth
@@ -77,21 +76,21 @@ fi
 
 read -p "Do you want to install build-essential ? (y/N)" BUILDESS
 if [[ ${BUILDESS,,} = y || ${BUILDESS,,} = yes ]]; then
-    sudo apt-get install build-essential
+    sudo apt install build-essential
 fi
 
 #Usefull packages
 
 read -p "Do you want to install Fish, Neofetch, Htop, Gnome-extension-manager ? (y/N)" PACKAGEUSE
 if [[ ${PACKAGEUSE,,} = y || ${PACKAGEUSE,,} = yes ]]; then
-    sudo apt-get install fish gnome-shell-extension-manager neofetch htop
+    sudo apt install fish gnome-shell-extension-manager htop
 fi
 
 #Ask to install CUPS
 
 read -p "Do you want to install CUPS, it's for printing support ? (y/N)" CUPSINSTALL
 if [[ ${CUPSINSTALL,,} = y || ${CUPSINSTALL,,} = yes ]]; then
-    sudo apt-get install cups
+    sudo apt install cups
     sudo systemctl enable --now cups
 fi
 
@@ -99,22 +98,21 @@ fi
 
 read -p "Do you want to install zram ? (y/N)" ZRAMINSTALL
 if [[ ${ZRAMINSTALL,,} = y || ${ZRAMINSTALL,,} = yes ]]; then
-    sudo apt-get install zram-tools
+    sudo apt install zram-tools
     sudo nano /etc/default/zramswap
-    sudo systemctl
     sudo systemctl restart zramswap
 fi
 
 #Codecs
 
 echo "Installing codecs ..."
-sudo apt-get install libavcodec-extra
+sudo apt install libavcodec-extra
 
 #Firewall
 
 read -p "Do you want to install UFW (a firewall) ? (y/N)" UFWINSTALL
 if [[ ${UFWINSTALL,,} = y || ${UFWINSTALL,,} = yes ]]; then
-    sudo apt-get install ufw
+    sudo apt install ufw
     sudo ufw enable
     sudo ufw allow 1716:1764/tcp
     sudo ufw allow 1716:1764/udp
@@ -123,7 +121,7 @@ fi
 #Install some gnome extensions
 
 echo "Installing some extensions ..."
-sudo apt-get install gnome-shell-extension-dashtodock gnome-shell-extension-gsconnect gnome-shell-extension-tiling-assistant
+sudo apt install gnome-shell-extension-dashtodock gnome-shell-extension-gsconnect
 
 #Install some flatpak apps
 
