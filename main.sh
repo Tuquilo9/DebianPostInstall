@@ -18,7 +18,7 @@ set +e
 echo "
 Installing GNOME ..."
 set -e
-sudo apt install gnome-core desktop-base libproxy1-plugin-networkmanager network-manager-gnome file-roller gnome-color-manager shotwell gnome-photos rygel-playbin rygel-tracker simple-scan avahi-daemon gnome-sound-recorder gnome-tweaks libgsf-bin rhythmbox seahorse xdg-user-dirs-gtk cups-pk-helper evolution-plugins gstreamer1.0-libav gstreamer1.0-plugins-ugly rhythmbox-plugins rhythmbox-plugin-cdrecorder
+sudo apt install gnome-core desktop-base libproxy1-plugin-networkmanager network-manager-gnome file-roller gnome-color-manager shotwell gnome-photos rygel-playbin rygel-tracker simple-scan avahi-daemon gnome-sound-recorder gnome-tweaks libgsf-bin rhythmbox seahorse xdg-user-dirs-gtk cups-pk-helper evolution-plugins gstreamer1.0-libav gstreamer1.0-plugins-ugly rhythmbox-plugins libgdk-pixbuf2.0-bin rhythmbox-plugin-cdrecorder
 set +e
 sudo systemctl disable --now ModemManager
 sudo apt autoremove evolution-data-server yelp firefox* libreoffice*
